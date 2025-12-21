@@ -39,20 +39,5 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 }
 
-public class ResourceNotFoundException extends RuntimeException {
-    public ResourceNotFoundException(String message) {
-        super(message);
-    }
-}
 
-public class BusinessException extends RuntimeException {
-    public BusinessException(String message) {
-        super(message);
-    }
-}
 
-public class UnauthorizedException extends RuntimeException {
-    public UnauthorizedException(String message) {
-        super(message);
-    }
-}

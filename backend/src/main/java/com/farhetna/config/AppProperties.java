@@ -27,3 +27,4 @@ public class AppProperties {
         private String videoDir = "./uploads/videos";
     }
 }
+

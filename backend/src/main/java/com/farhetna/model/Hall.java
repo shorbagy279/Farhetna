@@ -18,11 +18,15 @@ public class Hall extends BaseEntity {
     @JoinColumn(name = "location_id", nullable = false)
     private Location location;
 
+    @OneToMany(mappedBy = "hall", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<HallImage> images;
+
     @Column(nullable = false)
     private String nameAr;
 
     @Column(nullable = false)
     private String nameEn;
+
 
     @Column(columnDefinition = "TEXT")
     private String descriptionAr;
@@ -32,6 +36,18 @@ public class Hall extends BaseEntity {
 
     @Column(nullable = false)
     private Integer capacity;
+    
+    @OneToMany(mappedBy = "hall", cascade = CascadeType.ALL, orphanRemoval = true)
+private List<AddOn> addOns;
+
+@ManyToMany
+@JoinTable(
+    name = "hall_amenities",
+    joinColumns = @JoinColumn(name = "hall_id"),
+    inverseJoinColumns = @JoinColumn(name = "amenity_id")
+)
+private List<Amenity> amenities;
+
 
     private String address;
     private Double latitude;

@@ -31,11 +31,19 @@ public interface HallRepository extends JpaRepository<Hall, Long> {
     );
     
     @Query("SELECT h FROM Hall h JOIN h.amenities a WHERE a.id IN :amenityIds " +
-           "GROUP BY h.id HAVING COUNT(DISTINCT a.id) = :amenityCount")
-    List<Hall> findByAllAmenitiesIn(
-        @Param("amenityIds") List<Long> amenityIds,
-        @Param("amenityCount") Long amenityCount
-    );
+       "GROUP BY h.id HAVING COUNT(DISTINCT a.id) = :amenityCount")
+List<Hall> findByAllAmenitiesIn(
+    @Param("amenityIds") List<Long> amenityIds,
+    @Param("amenityCount") Long amenityCount
+);
+
+@Query("SELECT h FROM Hall h JOIN h.addOns a WHERE a.id IN :addOnIds " +
+       "GROUP BY h.id HAVING COUNT(DISTINCT a.id) = :addOnCount")
+List<Hall> findByAllAddOnsIn(
+    @Param("addOnIds") List<Long> addOnIds,
+    @Param("addOnCount") Long addOnCount
+);
+
 }
 
 

@@ -1,0 +1,24 @@
+package com.farhetna.dto;
+
+import lombok.*;
+import java.util.List;
+
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class HallResponse {
+    private Long id;
+    private String nameAr;
+    private String nameEn;
+    private String descriptionAr;
+    private String descriptionEn;
+    private Integer capacity;
+    private LocationResponse location;
+    private List<String> imageUrls;
+    private List<AmenityResponse> amenities;
+    private Double averageRating;
+    private Integer totalRatings;
+    private Double startingPrice;
+    private Boolean isFavorite;
+}

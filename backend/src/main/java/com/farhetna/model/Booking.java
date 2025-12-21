@@ -22,7 +22,7 @@ public class Booking extends BaseEntity {
 
     @ManyToOne
     @JoinColumn(name = "package_id", nullable = false)
-    private Package selectedPackage;
+    private HallPackage selectedPackage;
 
     @ManyToMany
     @JoinTable(

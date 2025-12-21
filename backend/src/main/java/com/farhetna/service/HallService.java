@@ -1,6 +1,7 @@
 package com.farhetna.service;
 
 import com.farhetna.dto.*;
+import com.farhetna.mapper.HallMapper;
 import com.farhetna.model.*;
 import com.farhetna.repository.*;
 import lombok.RequiredArgsConstructor;
@@ -8,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -22,9 +24,10 @@ public class HallService {
     private final CustomerRepository customerRepository;
     private final BlockedDateRepository blockedDateRepository;
     private final BookingRepository bookingRepository;
+    private final HallMapper hallMapper;
     
     @Transactional(readOnly = true)
-    public List<Hall> searchHalls(HallSearchRequest request, Long userId) {
+    public List<HallResponse> searchHalls(HallSearchRequest request, Long userId) {
         List<Hall> halls = hallRepository.searchHalls(
             request.getLocationId(),
             request.getMinCapacity(),
@@ -44,10 +47,20 @@ public class HallService {
         if (request.getCheckDate() != null) {
             halls = halls.stream()
                 .filter(hall -> isDateAvailable(hall.getId(), request.getCheckDate()))
-                .toList();
+                .collect(Collectors.toList());
         }
         
-        return halls;
+        return halls.stream()
+            .map(hall -> hallMapper.toResponse(hall, userId))
+            .collect(Collectors.toList());
+    }
+    
+    @Transactional(readOnly = true)
+    public HallResponse getHallDetails(Long hallId, Long userId) {
+        Hall hall = hallRepository.findById(hallId)
+            .orElseThrow(() -> new RuntimeException("Hall not found"));
+        
+        return hallMapper.toResponse(hall, userId);
     }
     
     @Transactional(readOnly = true)
@@ -57,13 +70,19 @@ public class HallService {
     }
     
     @Transactional(readOnly = true)
-    public List<Package> getHallPackages(Long hallId) {
-        return packageRepository.findByHallIdAndActiveTrue(hallId);
+    public List<PackageResponse> getHallPackages(Long hallId) {
+        List<HallPackage> packages = packageRepository.findByHallIdAndActiveTrue(hallId);
+        return packages.stream()
+            .map(hallMapper::toPackageResponse)
+            .collect(Collectors.toList());
     }
     
     @Transactional(readOnly = true)
-    public List<AddOn> getHallAddOns(Long hallId) {
-        return addOnRepository.findByHallIdAndActiveTrue(hallId);
+    public List<AddOnResponse> getHallAddOns(Long hallId) {
+        List<AddOn> addOns = addOnRepository.findByHallIdAndActiveTrue(hallId);
+        return addOns.stream()
+            .map(hallMapper::toAddOnResponse)
+            .collect(Collectors.toList());
     }
     
     @Transactional(readOnly = true)
@@ -112,13 +131,14 @@ public class HallService {
     }
     
     @Transactional(readOnly = true)
-    public List<Hall> getFavoriteHalls(Long userId) {
+    public List<HallResponse> getFavoriteHalls(Long userId) {
         Customer customer = customerRepository.findByUserId(userId)
             .orElseThrow(() -> new RuntimeException("Customer not found"));
         
         return favoriteRepository.findByCustomerId(customer.getId()).stream()
             .map(Favorite::getHall)
-            .toList();
+            .map(hall -> hallMapper.toResponse(hall, userId))
+            .collect(Collectors.toList());
     }
     
     private boolean isDateAvailable(Long hallId, LocalDate date) {
