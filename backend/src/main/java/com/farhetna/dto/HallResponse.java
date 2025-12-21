@@ -17,6 +17,7 @@ public class HallResponse {
     private LocationResponse location;
     private List<String> imageUrls;
     private List<AmenityResponse> amenities;
+    private List<AddOnResponse> addOns;
     private Double averageRating;
     private Integer totalRatings;
     private Double startingPrice;

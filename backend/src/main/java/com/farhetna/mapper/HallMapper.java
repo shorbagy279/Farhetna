@@ -22,9 +22,14 @@ public abstract class HallMapper {
     @Mapping(target = "location", source = "location")
     @Mapping(target = "imageUrls", expression = "java(extractImageUrls(hall))")
     @Mapping(target = "isFavorite", expression = "java(checkIfFavorite(hall, userId))")
-    @Mapping(target = "addOns", expression = "java(toAddOnResponses(hall.getAddOns()))")
     @Mapping(target = "amenities", expression = "java(toAmenityResponses(hall.getAmenities()))")
     public abstract HallResponse toResponse(Hall hall, @Context Long userId);
+    
+    // Set addOns after mapping to avoid builder issue
+    @AfterMapping
+    protected void setAddOns(@MappingTarget HallResponse response, Hall hall) {
+        response.setAddOns(toAddOnResponses(hall.getAddOns()));
+    }
 
     // ================= PACKAGE =================
     @Mapping(target = "inclusionsAr", expression = "java(extractInclusionsAr(pkg))")
